@@ -8,7 +8,20 @@ import javax.transaction.Transactional
 
 @Service
 class AccountService(private val accountRepository: AccountRepository) {
-    fun getBalance(accountId: UUID): BigDecimal =
+    fun getAllAccounts(): List<AccountDto>? =
+        accountRepository.findAll().map {
+            AccountDto(it.id!!, it.balance)
+        }.toList()
+
+    fun createNewAccount(): AccountDto =
+        accountRepository.save(Account()).let {
+            AccountDto(it.id!!, it.balance)
+        }
+
+    fun deleteAccount(accountId: UUID) =
+        accountRepository.deleteById(accountId)
+
+    fun getAccountBalance(accountId: UUID): BigDecimal =
         accountRepository.findById(accountId).getOrThrowIfNotFound(accountId).balance
 
     @Transactional

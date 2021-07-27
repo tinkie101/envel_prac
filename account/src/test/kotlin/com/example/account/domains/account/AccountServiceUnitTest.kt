@@ -2,27 +2,70 @@ package com.example.account.domains.account
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
+import org.mockito.kotlin.*
 import java.math.BigDecimal
 import java.util.*
 
 class AccountServiceUnitTest {
     @Test
-    fun getBalance() {
+    fun getAllAccounts() {
+        //Given
+        val mockRepo = mock<AccountRepository> {
+            on { findAll() }.doReturn(listOf(Account(UUID.randomUUID()), Account(UUID.randomUUID())))
+        }
+        val accountService = AccountService(mockRepo)
+
+        //When
+        val accounts = accountService.getAllAccounts()
+
+        //Then
+        assertThat(accounts?.size).isEqualTo(2)
+    }
+
+    @Test
+    fun createAccount() {
+        //Given
+        val account = Account(UUID.randomUUID())
+        val mockRepo = mock<AccountRepository> {
+            onGeneric { save(any()) }.doReturn(account)
+        }
+        val accountService = AccountService(mockRepo)
+
+        //When
+        val newAccount = accountService.createNewAccount()
+
+        //Then
+        assertThat(newAccount.id).isEqualTo(account.id)
+    }
+
+    @Test
+    fun deleteAccount() {
+        //Given
+        val mockRepo = mock<AccountRepository>{}
+        val accountService = AccountService(mockRepo)
+
+        //When
+        val randomUUID = UUID.randomUUID()
+        accountService.deleteAccount(randomUUID)
+
+        //Then
+        verify(mockRepo, times(1)).deleteById(randomUUID)
+        verify(mockRepo, times(1)).deleteById(any())
+    }
+
+    @Test
+    fun getAccountBalance() {
         // Given
         val initialBalance = BigDecimal.valueOf(250)
         val mockRepo = mock<AccountRepository> {
             val optionalAccount = Optional.of(Account(UUID.randomUUID(), initialBalance))
 
-            on { findById(any()) }
-                .doReturn(optionalAccount)
+            on { findById(any()) }.doReturn(optionalAccount)
         }
         val accountService = AccountService(mockRepo)
 
         //When
-        val balance = accountService.getBalance(UUID.randomUUID())
+        val balance = accountService.getAccountBalance(UUID.randomUUID())
 
         //Then
         assertThat(balance).isEqualTo(initialBalance)
@@ -34,8 +77,7 @@ class AccountServiceUnitTest {
         val mockRepo = mock<AccountRepository> {
             val optionalAccount = Optional.of(Account(UUID.randomUUID(), BigDecimal.ZERO))
 
-            on { findById(any()) }
-                .doReturn(optionalAccount)
+            on { findById(any()) }.doReturn(optionalAccount)
         }
         val accountService = AccountService(mockRepo)
 
@@ -52,8 +94,7 @@ class AccountServiceUnitTest {
         val mockRepo = mock<AccountRepository> {
             val optionalAccount = Optional.of(Account(UUID.randomUUID(), BigDecimal.valueOf(250)))
 
-            on { findById(any()) }
-                .doReturn(optionalAccount)
+            on { findById(any()) }.doReturn(optionalAccount)
         }
         val accountService = AccountService(mockRepo)
 
