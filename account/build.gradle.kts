@@ -14,7 +14,10 @@ java.sourceCompatibility = JavaVersion.VERSION_11
 
 dependencies {
     val mockitoKotlinVersion: String by project
+    val graphqlSpqrVersion: String by project
 
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("io.leangen.graphql:graphql-spqr-spring-boot-starter:$graphqlSpqrVersion")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")

@@ -8,10 +8,13 @@ import javax.transaction.Transactional
 
 @Service
 class AccountService(private val accountRepository: AccountRepository) {
-    fun getAllAccounts(): List<AccountDto>? =
+    fun getAllAccounts(): List<AccountDto> =
         accountRepository.findAll().map {
             AccountDto(it.id!!, it.balance)
         }.toList()
+
+    fun getAccount(accountId: UUID): AccountDto =
+        accountRepository.findById(accountId).getOrThrowIfNotFound(accountId).let { AccountDto(it.id!!, it.balance) }
 
     fun createNewAccount(): AccountDto =
         accountRepository.save(Account()).let {

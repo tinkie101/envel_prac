@@ -1,14 +1,24 @@
 package com.example.account.domains.account
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.math.BigDecimal
-import java.util.*
 
 @SpringBootTest
-internal class AccountServiceIntegrationTest(@Autowired private val accountService: AccountService) {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+internal class AccountServiceIntegrationTest(
+    @Autowired private val accountService: AccountService,
+    @Autowired private val accountRepository: AccountRepository
+) {
+    @BeforeAll
+    fun setUp() {
+        accountRepository.deleteAll()
+    }
+
     @Test
     fun getAllAccounts() {
         //When
@@ -16,6 +26,18 @@ internal class AccountServiceIntegrationTest(@Autowired private val accountServi
 
         //Then
         assertThat(accounts).isNotNull
+    }
+
+    @Test
+    fun getAccount() {
+        //Given
+        val newAccount = accountService.createNewAccount()
+
+        //When
+        val account = accountService.getAccount(newAccount.id)
+
+        //Then
+        assertThat(account.id).isEqualTo(newAccount.id)
     }
 
     @Test
@@ -42,7 +64,7 @@ internal class AccountServiceIntegrationTest(@Autowired private val accountServi
     @Test
     fun getAccountBalance() {
         //Given
-        val accountId = UUID.fromString("0cf2faef-3fe6-4225-a16d-40b17e714208")
+        val accountId = accountService.createNewAccount().id
 
         //When
         accountService.getAccountBalance(accountId)
@@ -54,7 +76,7 @@ internal class AccountServiceIntegrationTest(@Autowired private val accountServi
     @Test
     fun deposit() {
         //Given
-        val accountId = UUID.fromString("0cf2faef-3fe6-4225-a16d-40b17e714208")
+        val accountId = accountService.createNewAccount().id
         val initialVal = accountService.getAccountBalance(accountId)
         val amount = BigDecimal.valueOf(250)
 
@@ -68,7 +90,7 @@ internal class AccountServiceIntegrationTest(@Autowired private val accountServi
     @Test
     fun withdraw() {
         //Given
-        val accountId = UUID.fromString("0cf2faef-3fe6-4225-a16d-40b17e714208")
+        val accountId = accountService.createNewAccount().id
         val initialVal = accountService.getAccountBalance(accountId)
         val amount = BigDecimal.valueOf(250)
 

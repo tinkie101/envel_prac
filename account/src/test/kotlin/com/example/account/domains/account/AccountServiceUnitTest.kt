@@ -19,7 +19,23 @@ class AccountServiceUnitTest {
         val accounts = accountService.getAllAccounts()
 
         //Then
-        assertThat(accounts?.size).isEqualTo(2)
+        assertThat(accounts.size).isEqualTo(2)
+    }
+
+    @Test
+    fun getAccount() {
+        //Given
+        val randomUUID = UUID.randomUUID()
+        val mockRepo = mock<AccountRepository> {
+            on { findById(any()) }.doReturn(Optional.of(Account(randomUUID)))
+        }
+        val accountService = AccountService(mockRepo)
+
+        //When
+        val account = accountService.getAccount(randomUUID)
+
+        //Then
+        assertThat(account.id).isEqualTo(randomUUID)
     }
 
     @Test
