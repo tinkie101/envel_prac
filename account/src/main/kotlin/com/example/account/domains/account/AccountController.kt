@@ -1,19 +1,18 @@
 package com.example.account.domains.account
 
-import com.example.account.graphql.AccountType
 import java.math.BigDecimal
 import java.util.*
 
-interface AccountController {
-    fun getAllAccounts(): List<AccountType>
+interface AccountController<T> {
+    fun getAllAccounts(): List<T>
 
     /**
      * @param accountId The ID for the account to be returned
      * @return AccountType
      */
-    fun getAccountById(accountId: UUID): AccountType
+    fun getAccountById(accountId: UUID): T
 
-    fun createAccount(): AccountType
+    fun createAccount(): T
 
     /**
      * @param accountId The ID for the account

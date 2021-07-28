@@ -22,8 +22,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.postgresql:postgresql")
-    implementation("org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion")
 
+    testImplementation("org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
@@ -41,9 +41,10 @@ tasks {
 }
 
 flyway {
-    url="jdbc:postgresql://localhost:4321/envel"
-    user="postgres_user"
-    password="postgres_password"
+    url = "jdbc:postgresql://localhost:4321/envel"
+    user = "postgres_user"
+    password = "postgres_password"
     schemas = arrayOf("account")
-    locations=arrayOf("filesystem:flyway")
+    defaultSchema = "account"
+    locations = arrayOf("filesystem:flyway")
 }

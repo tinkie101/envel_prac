@@ -12,7 +12,7 @@ import java.util.*
 
 @Component
 @GraphQLApi
-class GraphQLAccountController(private val accountService: AccountService) : AccountController {
+class GraphQLAccountController(private val accountService: AccountService) : AccountController<AccountType> {
     @GraphQLQuery(name = "accounts", description = "Get All Accounts")
     override fun getAllAccounts(): List<AccountType> = accountService.getAllAccounts().map { it.toAccountType() }
 
