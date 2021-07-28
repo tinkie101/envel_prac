@@ -1,6 +1,7 @@
 package com.example.account.domains.account
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -16,6 +17,11 @@ internal class AccountServiceIntegrationTest(
 ) {
     @BeforeAll
     fun setUp() {
+        accountRepository.deleteAll()
+    }
+
+    @AfterAll
+    fun tearDown() {
         accountRepository.deleteAll()
     }
 
