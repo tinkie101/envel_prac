@@ -1,3 +1,5 @@
+persistence-units.xml
+
 HELP.md
 .gradle
 build/

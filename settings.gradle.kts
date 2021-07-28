@@ -1,3 +1,3 @@
 rootProject.name = "envel"
 
-include("account")
+include("account", "audit")
