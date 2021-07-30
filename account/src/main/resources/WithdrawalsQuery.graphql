@@ -1,0 +1,8 @@
+query WithdrawalsQuery($auditId: UUID!) {
+    audits(accountId: $auditId){
+        withdrawals {
+            amount
+            type
+        }
+    }
+}

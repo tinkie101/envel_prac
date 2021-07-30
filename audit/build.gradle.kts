@@ -1,13 +1,13 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "2.5.3"
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    id("org.flywaydb.flyway") version "7.11.2"
+    id("org.springframework.boot")
+    id("io.spring.dependency-management")
+    id("org.flywaydb.flyway")
 
-    kotlin("jvm") version "1.5.21"
-    kotlin("plugin.spring") version "1.5.21"
-    kotlin("plugin.jpa") version "1.5.21"
+    kotlin("jvm")
+    kotlin("plugin.spring")
+    kotlin("plugin.jpa")
 }
 
 java.sourceCompatibility = JavaVersion.VERSION_11
@@ -17,11 +17,11 @@ dependencies {
     val graphqlSpqrVersion: String by project
 
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("io.leangen.graphql:graphql-spqr-spring-boot-starter:$graphqlSpqrVersion")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.postgresql:postgresql")
+    implementation("io.leangen.graphql:graphql-spqr-spring-boot-starter:$graphqlSpqrVersion")
 
     testImplementation("org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion")
     testImplementation("org.mockito:mockito-inline")

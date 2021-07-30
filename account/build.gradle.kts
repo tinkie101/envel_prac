@@ -1,13 +1,15 @@
+import com.expediagroup.graphql.plugin.gradle.tasks.GraphQLGenerateClientTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "2.5.3"
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    id("org.flywaydb.flyway") version "7.11.2"
+    id("org.springframework.boot")
+    id("io.spring.dependency-management")
+    id("org.flywaydb.flyway")
+    id("com.expediagroup.graphql")
 
-    kotlin("jvm") version "1.5.21"
-    kotlin("plugin.spring") version "1.5.21"
-    kotlin("plugin.jpa") version "1.5.21"
+    kotlin("jvm")
+    kotlin("plugin.spring")
+    kotlin("plugin.jpa")
 }
 
 java.sourceCompatibility = JavaVersion.VERSION_11
@@ -15,13 +17,18 @@ java.sourceCompatibility = JavaVersion.VERSION_11
 dependencies {
     val mockitoKotlinVersion: String by project
     val graphqlSpqrVersion: String by project
+    val graphqlKotlinVersion: String by project
+    val graphqlKotlinTypesVersion: String by project
+
 
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("io.leangen.graphql:graphql-spqr-spring-boot-starter:$graphqlSpqrVersion")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.postgresql:postgresql")
+    implementation("io.leangen.graphql:graphql-spqr-spring-boot-starter:$graphqlSpqrVersion")
+    implementation("com.expediagroup:graphql-kotlin-spring-client:$graphqlKotlinVersion")
+    implementation("com.expediagroup:graphql-kotlin-types:$graphqlKotlinTypesVersion")
 
     testImplementation("org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -37,6 +44,17 @@ tasks {
 
     withType<Test> {
         useJUnitPlatform()
+    }
+
+    withType<GraphQLGenerateClientTask> {
+        dependsOn(clean)
+    }
+}
+
+graphql {
+    client {
+        endpoint = "http://localhost:8081/graphql"
+        packageName = "com.example.account.graphql.client"
     }
 }
 

@@ -13,6 +13,9 @@ import java.util.*
 @Component
 @GraphQLApi
 class GraphQLAuditController(private val transactionService: TransactionService) {
+    @GraphQLQuery(name = "helloWorld")
+    fun helloWorld(): String = "Hello World"
+
     @GraphQLQuery(name = "audits", description = "Return an audit report for account")
     fun getAudit(accountId: UUID): AuditType = transactionService.getAccountTransactions(accountId)
         .let { transactions ->
