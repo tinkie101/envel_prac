@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.*
 import java.math.BigDecimal
+import java.time.LocalDateTime
 import java.util.*
 
 class AccountServiceUnitTest {
@@ -11,7 +12,12 @@ class AccountServiceUnitTest {
     fun getAllAccounts() {
         //Given
         val mockRepo = mock<AccountRepository> {
-            on { findAll() }.doReturn(listOf(Account(UUID.randomUUID()), Account(UUID.randomUUID())))
+            on { findAll() }.doReturn(
+                listOf(
+                    Account(id = UUID.randomUUID(), createdOn = LocalDateTime.now()),
+                    Account(id = UUID.randomUUID(), createdOn = LocalDateTime.now())
+                )
+            )
         }
         val accountService = AccountService(mockRepo)
 
@@ -27,7 +33,7 @@ class AccountServiceUnitTest {
         //Given
         val randomUUID = UUID.randomUUID()
         val mockRepo = mock<AccountRepository> {
-            on { findById(any()) }.doReturn(Optional.of(Account(randomUUID)))
+            on { findById(any()) }.doReturn(Optional.of(Account(id = randomUUID, createdOn = LocalDateTime.now())))
         }
         val accountService = AccountService(mockRepo)
 
@@ -41,7 +47,8 @@ class AccountServiceUnitTest {
     @Test
     fun createAccount() {
         //Given
-        val account = Account(UUID.randomUUID())
+        val randomUUID = UUID.randomUUID()
+        val account = Account(id = randomUUID, createdOn = LocalDateTime.now())
         val mockRepo = mock<AccountRepository> {
             onGeneric { save(any()) }.doReturn(account)
         }
@@ -57,7 +64,7 @@ class AccountServiceUnitTest {
     @Test
     fun deleteAccount() {
         //Given
-        val mockRepo = mock<AccountRepository>{}
+        val mockRepo = mock<AccountRepository> {}
         val accountService = AccountService(mockRepo)
 
         //When
@@ -74,7 +81,7 @@ class AccountServiceUnitTest {
         // Given
         val initialBalance = BigDecimal.valueOf(250)
         val mockRepo = mock<AccountRepository> {
-            val optionalAccount = Optional.of(Account(UUID.randomUUID(), initialBalance))
+            val optionalAccount = Optional.of(Account(UUID.randomUUID(), initialBalance, LocalDateTime.now()))
 
             on { findById(any()) }.doReturn(optionalAccount)
         }
@@ -91,7 +98,7 @@ class AccountServiceUnitTest {
     fun deposit() {
         // Given
         val mockRepo = mock<AccountRepository> {
-            val optionalAccount = Optional.of(Account(UUID.randomUUID(), BigDecimal.ZERO))
+            val optionalAccount = Optional.of(Account(UUID.randomUUID(), BigDecimal.ZERO, LocalDateTime.now()))
 
             on { findById(any()) }.doReturn(optionalAccount)
         }
@@ -108,7 +115,7 @@ class AccountServiceUnitTest {
     fun withdraw() {
         // Given
         val mockRepo = mock<AccountRepository> {
-            val optionalAccount = Optional.of(Account(UUID.randomUUID(), BigDecimal.valueOf(250)))
+            val optionalAccount = Optional.of(Account(UUID.randomUUID(), BigDecimal.valueOf(250), LocalDateTime.now()))
 
             on { findById(any()) }.doReturn(optionalAccount)
         }

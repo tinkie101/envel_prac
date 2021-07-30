@@ -1,7 +1,10 @@
 package com.example.audit.domains.transaction
 
-import com.example.audit.enums.TransactionType
+import com.example.audit.enums.TransactionTypes
+import com.sun.istack.NotNull
+import org.hibernate.annotations.CreationTimestamp
 import java.math.BigDecimal
+import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
 
@@ -15,5 +18,10 @@ class Transaction(
     val amount: BigDecimal,
 
     @Enumerated(EnumType.STRING)
-    val type: TransactionType
+    val type: TransactionTypes,
+
+    @CreationTimestamp
+    @NotNull
+    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE DEFAULT NOW()")
+    val createdOn: LocalDateTime? = null
 )

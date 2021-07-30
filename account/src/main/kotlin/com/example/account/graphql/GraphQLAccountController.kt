@@ -31,5 +31,5 @@ class GraphQLAccountController(private val accountService: AccountService) : Acc
         accountService.deposit(accountId, amount)
 
     // Extension function
-    private fun AccountDto.toAccountType(): AccountType = AccountType(id, balance)
+    private fun AccountDto.toAccountType(): AccountType = AccountType(id, balance, createdOn)
 }

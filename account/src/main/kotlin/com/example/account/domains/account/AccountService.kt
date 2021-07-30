@@ -10,16 +10,14 @@ import javax.transaction.Transactional
 class AccountService(private val accountRepository: AccountRepository) {
     fun getAllAccounts(): List<AccountDto> =
         accountRepository.findAll().map {
-            AccountDto(it.id!!, it.balance)
+            it.toDto()
         }.toList()
 
     fun getAccount(accountId: UUID): AccountDto =
-        accountRepository.findById(accountId).getOrThrowIfNotFound(accountId).let { AccountDto(it.id!!, it.balance) }
+        accountRepository.findById(accountId).getOrThrowIfNotFound(accountId).toDto()
 
     fun createNewAccount(): AccountDto =
-        accountRepository.save(Account()).let {
-            AccountDto(it.id!!, it.balance)
-        }
+        accountRepository.save(Account()).toDto()
 
     fun deleteAccount(accountId: UUID) =
         accountRepository.deleteById(accountId)
@@ -58,4 +56,8 @@ class AccountService(private val accountRepository: AccountRepository) {
             true -> throw AccountNotFoundException("User account $accountId not found")
             else -> this.get()
         }
+
+    private fun Account.toDto(): AccountDto {
+        return AccountDto(id!!, balance, createdOn!!)
+    }
 }

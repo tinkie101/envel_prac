@@ -1,5 +1,5 @@
 query WithdrawalsQuery($auditId: UUID!) {
-    audits(accountId: $auditId){
+    audit(accountId: $auditId){
         withdrawals {
             amount
             type

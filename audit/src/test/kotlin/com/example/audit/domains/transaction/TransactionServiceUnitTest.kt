@@ -1,6 +1,6 @@
 package com.example.audit.domains.transaction
 
-import com.example.audit.enums.TransactionType
+import com.example.audit.enums.TransactionTypes
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -26,22 +26,22 @@ internal class TransactionServiceUnitTest {
             Transaction(
                 accountId = account1,
                 amount = BigDecimal.valueOf(250.5),
-                type = TransactionType.WITHDRAWAL
+                type = TransactionTypes.WITHDRAWAL
             ),
             Transaction(
                 accountId = account1,
                 amount = BigDecimal.valueOf(20.5),
-                type = TransactionType.DEPOSIT
+                type = TransactionTypes.DEPOSIT
             ),
             Transaction(
                 accountId = account2,
                 amount = BigDecimal.valueOf(895.5),
-                type = TransactionType.WITHDRAWAL
+                type = TransactionTypes.WITHDRAWAL
             ),
             Transaction(
                 accountId = account2,
                 amount = BigDecimal.valueOf(210.0),
-                type = TransactionType.DEPOSIT
+                type = TransactionTypes.DEPOSIT
             )
         )
     }
@@ -76,12 +76,12 @@ internal class TransactionServiceUnitTest {
         val transaction = transactionService.addAccountDeposit(account1, amount)
 
         // Then
-        assertThat(captor.value.type).isEqualTo(TransactionType.DEPOSIT)
+        assertThat(captor.value.type).isEqualTo(TransactionTypes.DEPOSIT)
         assertThat(captor.value.amount).isEqualTo(amount)
 
         assertThat(transaction.accountId).isEqualTo(account1)
         assertThat(transaction.amount).isEqualTo(amount)
-        assertThat(transaction.type).isEqualTo(TransactionType.DEPOSIT)
+        assertThat(transaction.type).isEqualTo(TransactionTypes.DEPOSIT)
     }
 
     @Test
@@ -99,11 +99,11 @@ internal class TransactionServiceUnitTest {
         val transaction = transactionService.addAccountWithdrawal(account1, amount)
 
         // Then
-        assertThat(captor.value.type).isEqualTo(TransactionType.WITHDRAWAL)
+        assertThat(captor.value.type).isEqualTo(TransactionTypes.WITHDRAWAL)
         assertThat(captor.value.amount).isEqualTo(amount)
 
         assertThat(transaction.accountId).isEqualTo(account1)
         assertThat(transaction.amount).isEqualTo(amount)
-        assertThat(transaction.type).isEqualTo(TransactionType.WITHDRAWAL)
+        assertThat(transaction.type).isEqualTo(TransactionTypes.WITHDRAWAL)
     }
 }

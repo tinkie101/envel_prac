@@ -1,6 +1,6 @@
 package com.example.audit.enums
 
-enum class TransactionType {
+enum class TransactionTypes {
     WITHDRAWAL,
     DEPOSIT
 }

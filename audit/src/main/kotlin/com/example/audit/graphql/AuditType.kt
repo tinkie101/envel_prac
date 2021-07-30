@@ -1,12 +1,9 @@
 package com.example.audit.graphql
 
-import com.example.audit.domains.transaction.TransactionDto
 import io.leangen.graphql.annotations.types.GraphQLType
 import java.util.*
 
-@GraphQLType
+@GraphQLType(name = "audit")
 data class AuditType(
-    val accountId: UUID,
-    val deposits: List<TransactionDto>,
-    val withdrawals: List<TransactionDto>
+    val accountId: UUID
 )
