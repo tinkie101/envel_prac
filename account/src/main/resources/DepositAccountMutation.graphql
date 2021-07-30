@@ -1,0 +1,8 @@
+mutation DepositAccountMutation($accountId: UUID!, $amount: BigDecimal!) {
+    auditDeposit(depositAccount: {accountId: $accountId, amount: $amount}) {
+        accountId
+        amount
+        type
+        createdOn
+    }
+}

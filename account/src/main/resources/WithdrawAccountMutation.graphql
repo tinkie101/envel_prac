@@ -1,0 +1,8 @@
+mutation WithdrawAccountMutation($accountId: UUID!, $amount: BigDecimal!) {
+    auditWithdrawal(withdrawAccount: {accountId: $accountId, amount: $amount}) {
+        accountId
+        amount
+        type
+        createdOn
+    }
+}

@@ -24,12 +24,16 @@ class TransactionService(private val transactionRepository: TransactionRepositor
 
     fun addAccountDeposit(accountId: UUID, amount: BigDecimal) =
         Transaction(accountId = accountId, amount = amount, type = TransactionTypes.DEPOSIT)
-            .apply(transactionRepository::save)
+            .let(transactionRepository::save)
+            .toDto()
 
     fun addAccountWithdrawal(accountId: UUID, amount: BigDecimal) =
         Transaction(accountId = accountId, amount = amount, type = TransactionTypes.WITHDRAWAL)
-            .apply(transactionRepository::save)
+            .let(transactionRepository::save)
+            .toDto()
 
     // Extension function
-    fun Transaction.toDto() = TransactionDto(id!!, accountId, amount, type, createdOn!!)
+    fun Transaction.toDto(): TransactionDto {
+        return TransactionDto(id!!, accountId, amount, type, createdOn!!)
+    }
 }

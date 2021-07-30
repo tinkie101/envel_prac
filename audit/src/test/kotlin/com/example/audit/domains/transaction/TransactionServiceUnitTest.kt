@@ -9,6 +9,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import java.math.BigDecimal
+import java.time.LocalDateTime
 import java.util.*
 
 
@@ -64,15 +65,21 @@ internal class TransactionServiceUnitTest {
     @Test
     fun addAccountDeposit() {
         // Given
+        val amount = BigDecimal(180.5)
         val captor = ArgumentCaptor.forClass(Transaction::class.java)
-        val mockTransaction = mock<Transaction> {}
+        val mockTransaction = Transaction(
+            UUID.randomUUID(),
+            account1,
+            amount,
+            TransactionTypes.DEPOSIT,
+            LocalDateTime.now()
+        )
         val mockRepo = mock<TransactionRepository> {
             on(it.save(captor.capture())).doReturn(mockTransaction)
         }
         val transactionService = TransactionService(mockRepo)
 
         // When
-        val amount = BigDecimal(180.5)
         val transaction = transactionService.addAccountDeposit(account1, amount)
 
         // Then
@@ -87,15 +94,21 @@ internal class TransactionServiceUnitTest {
     @Test
     fun addAccountWithdrawal() {
         // Given
+        val amount = BigDecimal(180.5)
         val captor = ArgumentCaptor.forClass(Transaction::class.java)
-        val mockTransaction = mock<Transaction> {}
+        val mockTransaction = Transaction(
+            UUID.randomUUID(),
+            account1,
+            amount,
+            TransactionTypes.WITHDRAWAL,
+            LocalDateTime.now()
+        )
         val mockRepo = mock<TransactionRepository> {
             on(it.save(captor.capture())).doReturn(mockTransaction)
         }
         val transactionService = TransactionService(mockRepo)
 
         // When
-        val amount = BigDecimal(180.5)
         val transaction = transactionService.addAccountWithdrawal(account1, amount)
 
         // Then

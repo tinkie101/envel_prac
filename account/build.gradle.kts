@@ -44,6 +44,8 @@ tasks {
 
     withType<Test> {
         useJUnitPlatform()
+//        graphqlGenerateClient { enabled = false }
+//        graphqlIntrospectSchema { enabled = false }
     }
 
     withType<GraphQLGenerateClientTask> {

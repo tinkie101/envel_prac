@@ -1,14 +1,13 @@
 package com.example.audit.graphql
 
-import com.example.audit.domains.transaction.Transaction
 import com.example.audit.domains.transaction.TransactionDto
 import com.example.audit.domains.transaction.TransactionService
 import io.leangen.graphql.annotations.GraphQLContext
+import io.leangen.graphql.annotations.GraphQLInputField
 import io.leangen.graphql.annotations.GraphQLMutation
 import io.leangen.graphql.annotations.GraphQLQuery
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi
 import org.springframework.stereotype.Component
-import java.math.BigDecimal
 import java.util.*
 
 @Component
@@ -29,12 +28,12 @@ class GraphQLAuditController(private val transactionService: TransactionService)
         transactionService.getAccountDeposits(auditType.accountId).map { it.toGraphQLType() }
 
     @GraphQLMutation(name = "auditWithdrawal", description = "Add a withdrawal audit report for account")
-    fun addWithdrawal(accountId: UUID, amount: BigDecimal): Transaction =
-        transactionService.addAccountWithdrawal(accountId, amount)
+    fun addWithdrawal(@GraphQLInputField withdrawAccount: MutateAccount): TransactionType =
+        transactionService.addAccountWithdrawal(withdrawAccount.accountId, withdrawAccount.amount).toGraphQLType()
 
     @GraphQLMutation(name = "auditDeposit", description = "Add a deposit audit report for account")
-    fun addDeposit(accountId: UUID, amount: BigDecimal): Transaction =
-        transactionService.addAccountDeposit(accountId, amount)
+    fun addDeposit(@GraphQLInputField depositAccount: MutateAccount): TransactionType =
+        transactionService.addAccountDeposit(depositAccount.accountId, depositAccount.amount).toGraphQLType()
 
     // Extension function
     fun TransactionDto.toGraphQLType(): TransactionType {
