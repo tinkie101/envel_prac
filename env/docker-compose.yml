@@ -1,16 +1,48 @@
 version: "3.9"
 volumes:
-  postgres_volume: {}
+  postgres_volume: { }
 
 services:
   db:
     container_name: envel_postgres
     image: postgres:13.3
     environment:
-      POSTGRES_USER: postgres_user
-      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
       POSTGRES_DB: envel
+
+      KEYCLOAK_USER: $KEYCLOAK_DB_USER
+      KEYCLOAK_PASSWORD: $KEYCLOAK_DB_PASSWORD
+
+      ACCOUNT_USER: $ACCOUNT_USER
+      ACCOUNT_PASSWORD: $ACCOUNT_PASSWORD
+
+      AUDIT_USER: $AUDIT_USER
+      AUDIT_PASSWORD: $AUDIT_PASSWORD
     ports:
       - "4321:5432"
     volumes:
       - postgres_volume:/var/lib/postgresql/data
+      # create db users & schemas
+      - ./postgres:/docker-entrypoint-initdb.d
+
+  keycloak:
+    container_name: envel_keycloak
+    image: jboss/keycloak:15.0.0
+    depends_on:
+      - db
+    environment:
+      KEYCLOAK_USER: keycloak_user
+      KEYCLOAK_PASSWORD: keycloak_password
+
+      DB_VENDOR: postgres
+      DB_ADDR: db
+      DB_PORT: 5432
+      DB_DATABASE: envel
+      DB_SCHEMA: keycloak
+      DB_USER: $KEYCLOAK_DB_USER
+      DB_PASSWORD: $KEYCLOAK_DB_PASSWORD
+    ports:
+      - "5001:8080"
+    volumes:
+      - ./keycloak/:/tmp

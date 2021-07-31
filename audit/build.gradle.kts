@@ -42,8 +42,8 @@ tasks {
 
 flyway {
     url = "jdbc:postgresql://localhost:4321/envel"
-    user = "postgres_user"
-    password = "postgres_password"
+    user = System.getenv("AUDIT_USER")
+    password = System.getenv("AUDIT_PASSWORD")
     defaultSchema = "audit"
     schemas = arrayOf("audit")
     locations = arrayOf("filesystem:flyway")

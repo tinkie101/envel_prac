@@ -62,8 +62,8 @@ graphql {
 
 flyway {
     url = "jdbc:postgresql://localhost:4321/envel"
-    user = "postgres_user"
-    password = "postgres_password"
+    user = System.getenv("ACCOUNT_USER")
+    password = System.getenv("ACCOUNT_PASSWORD")
     schemas = arrayOf("account")
     defaultSchema = "account"
     locations = arrayOf("filesystem:flyway")

@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := help
 
 dev-up: ## Run docker environment
-	docker-compose -f ./env/docker-compose.yml up -d
+	docker-compose -f ./env/docker-compose.yml --env-file ./env/.env up -d
 
 dev-down: ## Stop docker environment
 	docker-compose -f ./env/docker-compose.yml up -d

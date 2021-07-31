@@ -1,4 +1,5 @@
 persistence-units.xml
+.env
 
 HELP.md
 .gradle
