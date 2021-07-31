@@ -23,7 +23,7 @@ class AuditService {
                 )
             )
             val result = client.execute(depositMutation)
-//            {addAuthToken(token)}
+// TODO           {addAuthToken(token)}
             println("${result.data?.auditDeposit?.type} \$${result.data?.auditDeposit?.amount} on ${result.data?.auditDeposit?.createdOn}")
         }
     }
@@ -37,7 +37,7 @@ class AuditService {
                 )
             )
             val result = client.execute(depositMutation)
-//            {addAuthToken(token)}
+// TODO           {addAuthToken(token)}
             println("${result.data?.auditWithdrawal?.type} \$${result.data?.auditWithdrawal?.amount} on ${result.data?.auditWithdrawal?.createdOn}")
         }
     }
