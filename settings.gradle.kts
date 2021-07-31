@@ -19,4 +19,4 @@ pluginManagement {
     }
 }
 
-include("account", "audit")
+include("account", "audit", "gateway")
