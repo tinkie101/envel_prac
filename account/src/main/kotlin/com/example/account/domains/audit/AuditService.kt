@@ -14,12 +14,12 @@ import java.util.*
 class AuditService {
     private val client = GraphQLWebClient("http://localhost:8081/graphql")
 
-    fun auditDeposit() {
+    fun auditDeposit(accountId: UUID, amount: BigDecimal) {
         runBlocking {
             val depositMutation = DepositAccountMutation(
                 DepositAccountMutation.Variables(
-                    UUID.randomUUID().toString(),
-                    BigDecimal.ZERO.toString()
+                    accountId.toString(),
+                    amount.toString()
                 )
             )
             val result = client.execute(depositMutation)
@@ -28,12 +28,12 @@ class AuditService {
         }
     }
 
-    fun auditWithdrawal() {
+    fun auditWithdrawal(accountId: UUID, amount: BigDecimal) {
         runBlocking {
             val depositMutation = WithdrawAccountMutation(
                 WithdrawAccountMutation.Variables(
-                    UUID.randomUUID().toString(),
-                    BigDecimal.ZERO.toString()
+                    accountId.toString(),
+                    amount.toString()
                 )
             )
             val result = client.execute(depositMutation)

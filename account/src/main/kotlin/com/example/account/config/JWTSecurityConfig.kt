@@ -16,7 +16,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 class JWTSecurityConfig : WebSecurityConfigurerAdapter() {
     override fun configure(http: HttpSecurity) {
         http.authorizeRequests()
-            .antMatchers(HttpMethod.GET, "/unsecured").permitAll()
+            .antMatchers(HttpMethod.GET, "/gui").permitAll()
             .antMatchers(HttpMethod.GET, "/mutate").hasRole("mutate")
             .anyRequest().authenticated()
             .and()
