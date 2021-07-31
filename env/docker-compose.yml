@@ -32,6 +32,7 @@ services:
     depends_on:
       - db
     environment:
+      KEYCLOAK_IMPORT: /tmp/realm-export.json
       KEYCLOAK_USER: keycloak_user
       KEYCLOAK_PASSWORD: keycloak_password
 
