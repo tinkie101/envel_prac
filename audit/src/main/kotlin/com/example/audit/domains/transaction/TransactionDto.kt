@@ -10,5 +10,6 @@ class TransactionDto(
     val accountId: UUID,
     val amount: BigDecimal,
     val type: TransactionTypes,
-    val createdOn: LocalDateTime
+    val createdOn: LocalDateTime,
+    val userId: UUID
 )

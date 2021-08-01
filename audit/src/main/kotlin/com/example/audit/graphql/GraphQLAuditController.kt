@@ -37,6 +37,6 @@ class GraphQLAuditController(private val transactionService: TransactionService)
 
     // Extension function
     fun TransactionDto.toGraphQLType(): TransactionType {
-        return TransactionType(id, accountId, amount, type, createdOn)
+        return TransactionType(id, accountId, amount, type, createdOn, userId)
     }
 }

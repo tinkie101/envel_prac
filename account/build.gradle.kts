@@ -54,7 +54,7 @@ tasks {
     withType<GraphQLGenerateClientTask> {
         dependsOn(clean)
 
-        schemaFile.set(File("${project.projectDir}/src/main/resources/schema.graphql"))
+        schemaFile.set(File("${project.projectDir}/src/main/resources/graphql/schema.graphql"))
     }
 }
 
@@ -62,7 +62,7 @@ graphql {
     client {
         endpoint = "http://localhost:8081/graphql"
         packageName = "com.example.account.graphql.client"
-        queryFileDirectory = "${project.projectDir}/src/main/resources/graphql"
+        queryFileDirectory = "${project.projectDir}/src/main/resources/graphql/client"
     }
 }
 

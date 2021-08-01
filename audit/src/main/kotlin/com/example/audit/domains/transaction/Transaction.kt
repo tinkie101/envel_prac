@@ -9,6 +9,7 @@ import java.util.*
 import javax.persistence.*
 
 @Entity
+@Table(indexes = [Index(name = "accountIdIdx", columnList = "accountId", unique = true)])
 class Transaction(
     @Id
     @GeneratedValue
@@ -23,5 +24,7 @@ class Transaction(
     @CreationTimestamp
     @NotNull
     @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE DEFAULT NOW()")
-    val createdOn: LocalDateTime? = null
+    val createdOn: LocalDateTime? = null,
+
+    val userId: UUID
 )

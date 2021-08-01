@@ -10,9 +10,18 @@ spring:
   jpa:
     properties:
       hibernate:
+        format_sql: true
         jdbc:
           time_zone: UTC
         default_schema: audit
+  #    show-sql: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:5001/auth/realms/envel
+
 graphql:
   spqr:
     gui:
