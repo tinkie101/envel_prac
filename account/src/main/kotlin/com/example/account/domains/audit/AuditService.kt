@@ -12,7 +12,6 @@ import org.springframework.web.reactive.function.client.WebClient
 import java.math.BigDecimal
 import java.util.*
 
-
 @Service
 class AuditService {
     private val client = GraphQLWebClient("http://localhost:8081/graphql")
@@ -31,9 +30,6 @@ class AuditService {
     }
 
     fun auditWithdrawal(accountId: UUID, amount: BigDecimal) {
-        val authentication: JwtAuthenticationToken =
-            SecurityContextHolder.getContext().authentication as JwtAuthenticationToken
-
         runBlocking {
             val depositMutation = WithdrawAccountMutation(
                 WithdrawAccountMutation.Variables(
