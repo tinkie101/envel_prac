@@ -45,12 +45,16 @@ tasks {
 
     withType<Test> {
         useJUnitPlatform()
-//        graphqlGenerateClient { enabled = false }
-//        graphqlIntrospectSchema { enabled = false }
+    }
+
+    withType<com.expediagroup.graphql.plugin.gradle.tasks.GraphQLIntrospectSchemaTask> {
+        enabled = false
     }
 
     withType<GraphQLGenerateClientTask> {
         dependsOn(clean)
+
+        schemaFile.set(File("${project.projectDir}/src/main/resources/schema.graphql"))
     }
 }
 
@@ -58,6 +62,7 @@ graphql {
     client {
         endpoint = "http://localhost:8081/graphql"
         packageName = "com.example.account.graphql.client"
+        queryFileDirectory = "${project.projectDir}/src/main/resources/graphql"
     }
 }
 

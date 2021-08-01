@@ -1,0 +1,59 @@
+# Built-in java.math.BigDecimal
+scalar BigDecimal
+
+# Built-in scalar representing a local date-time
+scalar LocalDateTime
+
+#
+input MutateAccountInput {
+  accountId: UUID
+  amount: BigDecimal
+}
+
+# Mutation root
+type Mutation {
+  # Add a deposit audit report for account
+  auditDeposit(depositAccount: MutateAccountInput): transaction
+
+  # Add a withdrawal audit report for account
+  auditWithdrawal(withdrawAccount: MutateAccountInput): transaction
+}
+
+# Query root
+type Query {
+  # Return an audit report for account
+  audit(accountId: UUID): audit
+  helloWorld: String
+}
+
+#
+enum TransactionTypes {
+  DEPOSIT
+  WITHDRAWAL
+}
+
+# Use SPQR's SchemaPrinter to remove this from SDL
+scalar UNREPRESENTABLE
+
+# UUID String
+scalar UUID
+
+#
+type audit {
+  accountId: UUID
+
+  # Return all the deposits for an account
+  deposits: [transaction]
+
+  # Return all the withdrawals for an account
+  withdrawals: [transaction]
+}
+
+# A transaction that occurred on an account
+type transaction {
+  accountId: UUID
+  amount: BigDecimal
+  createdOn: LocalDateTime
+  id: UUID
+  type: TransactionTypes
+}
