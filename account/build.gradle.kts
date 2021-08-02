@@ -14,6 +14,26 @@ plugins {
 
 java.sourceCompatibility = JavaVersion.VERSION_11
 
+sourceSets.create("integration") {
+    compileClasspath += sourceSets.main.get().output
+    runtimeClasspath += sourceSets.main.get().output
+}
+
+val integrationImplementation: Configuration by configurations.getting {
+    extendsFrom(configurations.implementation.get())
+}
+
+configurations["integrationRuntimeOnly"].extendsFrom(configurations.runtimeOnly.get())
+
+val integrationTest = task<Test>("integration") {
+    description = "Runs the integration tests"
+    group = "verification"
+
+    testClassesDirs = sourceSets["integration"].output.classesDirs
+    classpath = sourceSets["integration"].runtimeClasspath
+    shouldRunAfter("test")
+}
+
 dependencies {
     val mockitoKotlinVersion: String by project
     val graphqlSpqrVersion: String by project
@@ -34,6 +54,9 @@ dependencies {
 
     testImplementation("org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+    integrationImplementation("org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion")
+    integrationImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 tasks {
