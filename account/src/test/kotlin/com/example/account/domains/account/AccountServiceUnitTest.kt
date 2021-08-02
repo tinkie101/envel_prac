@@ -208,7 +208,7 @@ class AccountServiceUnitTest {
         found: Boolean,
         initialBalance: BigDecimal,
         amount: BigDecimal,
-        then: (BigDecimal?) -> Unit
+        then: (() -> BigDecimal) -> Unit
     ) {
         // Given
         val account = UUID.randomUUID()
@@ -221,11 +221,11 @@ class AccountServiceUnitTest {
             on { findById(any()) }.doReturn(optionalAccount)
         }.let(::AccountService)
 
-        //When
-        val `when` = { accountService.withdraw(account, amount) }
-
         //Then
-        then(`when`)
+        then.invoke {
+            //when
+            accountService.withdraw(account, amount)
+        }
     }
 
     companion object {
@@ -275,8 +275,9 @@ class AccountServiceUnitTest {
             )
         }
 
-        private fun isEqualTo(amount: BigDecimal) = { method: () -> BigDecimal ->
-            assertThat(method()).isEqualTo(amount)
+        private fun isEqualTo(amount: Any) = { method: () -> BigDecimal ->
+            val balance = method()
+            assertThat(balance).isEqualTo(amount)
         }
 
         private inline fun <reified T : Exception> isException() = { method: () -> BigDecimal ->

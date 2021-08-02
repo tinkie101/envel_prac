@@ -40,8 +40,8 @@ class AccountService(private val accountRepository: AccountRepository) {
         throwIfNegative(amount).let {
             accountRepository.findById(accountId)
                 .getOrThrowIfNotFound(accountId)
-                .also {
-                    it.balance -= amount
+                .apply {
+                    balance -= amount
                 }.balance
         }
 
