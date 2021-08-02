@@ -2,6 +2,7 @@ import com.expediagroup.graphql.plugin.gradle.tasks.GraphQLGenerateClientTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
+    jacoco
     id("org.springframework.boot")
     id("io.spring.dependency-management")
     id("org.flywaydb.flyway")
@@ -51,6 +52,18 @@ dependencies {
 }
 
 tasks {
+    test {
+        finalizedBy(jacocoTestReport)
+    }
+
+    jacocoTestReport {
+        dependsOn(test)
+        reports {
+            xml.required.set(true)
+            html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
+        }
+    }
+
     task<Test>("integration") {
         description = "Runs the integration tests"
         group = "verification"

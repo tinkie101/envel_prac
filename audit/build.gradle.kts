@@ -1,6 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
+    jacoco
     id("org.springframework.boot")
     id("io.spring.dependency-management")
     id("org.flywaydb.flyway")
@@ -43,6 +44,18 @@ dependencies {
     integrationImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 tasks {
+    test {
+        finalizedBy(jacocoTestReport)
+    }
+
+    jacocoTestReport {
+        dependsOn(test)
+        reports {
+            xml.required.set(true)
+            html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
+        }
+    }
+
     task<Test>("integration") {
         description = "Runs the integration tests"
         group = "verification"
@@ -51,7 +64,7 @@ tasks {
         classpath = sourceSets["integration"].runtimeClasspath
         shouldRunAfter("test")
     }
-    
+
     withType<KotlinCompile> {
         kotlinOptions {
             freeCompilerArgs = listOf("-Xjsr305=strict")
