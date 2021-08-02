@@ -23,15 +23,6 @@ val integrationImplementation: Configuration by configurations.getting {
 
 configurations["integrationRuntimeOnly"].extendsFrom(configurations.runtimeOnly.get())
 
-val integrationTest = task<Test>("integration") {
-    description = "Runs the integration tests"
-    group = "verification"
-
-    testClassesDirs = sourceSets["integration"].output.classesDirs
-    classpath = sourceSets["integration"].runtimeClasspath
-    shouldRunAfter("test")
-}
-
 dependencies {
     val mockitoKotlinVersion: String by project
     val graphqlSpqrVersion: String by project
@@ -52,6 +43,15 @@ dependencies {
     integrationImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 tasks {
+    task<Test>("integration") {
+        description = "Runs the integration tests"
+        group = "verification"
+
+        testClassesDirs = sourceSets["integration"].output.classesDirs
+        classpath = sourceSets["integration"].runtimeClasspath
+        shouldRunAfter("test")
+    }
+    
     withType<KotlinCompile> {
         kotlinOptions {
             freeCompilerArgs = listOf("-Xjsr305=strict")
