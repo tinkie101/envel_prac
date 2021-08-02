@@ -1,6 +1,7 @@
 version = "0.0.1-SNAPSHOT"
 
 plugins {
+    id("org.sonarqube") version "2.8"
     id("org.springframework.boot") apply false
     id("io.spring.dependency-management") apply false
     id("org.flywaydb.flyway") apply false
