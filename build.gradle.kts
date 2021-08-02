@@ -16,3 +16,16 @@ subprojects {
         mavenCentral()
     }
 }
+
+sonarqube {
+    properties {
+        property("sonar.projectKey", "tinkie101_envel_prac")
+        property("sonar.organization", "tinkie101")
+        property("sonar.host.url", "https://sonarcloud.io")
+
+        property("sonar.java.coveragePlugin", "jacoco")
+        property("sonar.dynamicAnalysis", "reuseReports")
+        property("sonar.language", "kotlin")
+
+    }
+}
