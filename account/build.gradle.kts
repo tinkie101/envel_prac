@@ -20,6 +20,7 @@ dependencies {
     val graphqlKotlinVersion: String by project
     val graphqlKotlinTypesVersion: String by project
 
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")

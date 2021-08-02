@@ -13,8 +13,7 @@ import java.math.BigDecimal
 import java.util.*
 
 @Service
-class AuditService {
-    private val client = GraphQLWebClient("http://localhost:8081/graphql")
+class AuditService(private val client: GraphQLWebClient) {
 
     fun auditDeposit(accountId: UUID, amount: BigDecimal) {
         runBlocking {
@@ -24,8 +23,8 @@ class AuditService {
                     amount.toString()
                 )
             )
-            val result = client.execute(depositMutation) { addAuthToken() }
-            println("${result.data?.auditDeposit?.type} \$${result.data?.auditDeposit?.amount} on ${result.data?.auditDeposit?.createdOn}")
+            val result = client.execute(depositMutation) { addAuthToken() }.let { it?.data?.auditDeposit }
+            println("${result?.type} \$${result?.amount} on ${result?.createdOn}")
         }
     }
 
@@ -37,8 +36,8 @@ class AuditService {
                     amount.toString()
                 )
             )
-            val result = client.execute(depositMutation) { addAuthToken() }
-            println("${result.data?.auditWithdrawal?.type} \$${result.data?.auditWithdrawal?.amount} on ${result.data?.auditWithdrawal?.createdOn}")
+            val result = client.execute(depositMutation) { addAuthToken() }.let { it?.data?.auditWithdrawal }
+            println("${result?.type} \$${result?.amount} on ${result?.createdOn}")
         }
     }
 

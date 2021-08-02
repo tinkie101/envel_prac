@@ -22,3 +22,8 @@ graphql:
     gui:
       enabled: true
       endpoint: /gui
+
+com:
+  example:
+    account:
+      audit-api-url: http://localhost:8081/graphql

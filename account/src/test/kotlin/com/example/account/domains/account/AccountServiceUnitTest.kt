@@ -5,34 +5,60 @@ import com.example.account.exceptions.AccountNotFoundException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.fail
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.EnumSource
+import org.junit.jupiter.params.provider.MethodSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.ArgumentCaptor
 import org.mockito.kotlin.*
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.*
+import java.util.stream.Stream
 
 class AccountServiceUnitTest {
     @Test
     fun should_get_all_accounts() {
         //Given
-        val mockRepo = mock<AccountRepository> {
+        val accountService = mock<AccountRepository> {
             on { findAll() }.doReturn(
                 listOf(
                     Account(id = UUID.randomUUID(), createdOn = LocalDateTime.now()),
                     Account(id = UUID.randomUUID(), createdOn = LocalDateTime.now())
                 )
             )
-        }
-        val accountService = AccountService(mockRepo)
+        }.let(::AccountService)
 
         //When
         val accounts = accountService.getAllAccounts()
 
         //Then
         assertThat(accounts.size).isEqualTo(2)
+    }
+
+    @Test
+    fun should_create_account() {
+        //Given
+        val randomUUID = UUID.randomUUID()
+        val captor = ArgumentCaptor.forClass(Account::class.java)
+        val account = Account(id = randomUUID, createdOn = LocalDateTime.now())
+        val accountService = mock<AccountRepository> {
+            onGeneric { save(captor.capture()) }.doReturn(account)
+        }.let(::AccountService)
+
+        //When
+        val accountDto = accountService.createNewAccount()
+
+        //Then
+        assertThat(captor.value.id).isNull()
+        assertThat(captor.value.balance).isEqualTo(BigDecimal.ZERO)
+        assertThat(captor.value.createdOn).isNull()
+
+        assertThat(accountDto.id).isEqualTo(account.id)
+        assertThat(accountDto.balance).isEqualTo(account.balance)
+        assertThat(accountDto.createdOn).isEqualTo(account.createdOn)
     }
 
     @ParameterizedTest
@@ -42,7 +68,7 @@ class AccountServiceUnitTest {
 
         //Given
         val captor = ArgumentCaptor.forClass(UUID::class.java)
-        val mockRepo = mock<AccountRepository> {
+        val accountService = mock<AccountRepository> {
             on { findById(captor.capture()) }.doReturn(
                 Optional.of(
                     Account(
@@ -51,8 +77,7 @@ class AccountServiceUnitTest {
                     )
                 )
             )
-        }
-        val accountService = AccountService(mockRepo)
+        }.let(::AccountService)
 
         //When
         val account = accountService.getAccount(accountId)
@@ -68,40 +93,15 @@ class AccountServiceUnitTest {
         val accountId = UUID.fromString(input)
 
         //Given
-        val mockRepo = mock<AccountRepository> {
+        val accountService = mock<AccountRepository> {
             on { findById(any()) }.doReturn(Optional.empty())
-        }
-        val accountService = AccountService(mockRepo)
+        }.let(::AccountService)
 
         //Then
         assertThatExceptionOfType(AccountNotFoundException::class.java).isThrownBy {
             //When
             accountService.getAccount(accountId)
         }
-    }
-
-    @Test
-    fun should_create_account() {
-        //Given
-        val randomUUID = UUID.randomUUID()
-        val captor = ArgumentCaptor.forClass(Account::class.java)
-        val account = Account(id = randomUUID, createdOn = LocalDateTime.now())
-        val mockRepo = mock<AccountRepository> {
-            onGeneric { save(captor.capture()) }.doReturn(account)
-        }
-        val accountService = AccountService(mockRepo)
-
-        //When
-        val accountDto = accountService.createNewAccount()
-
-        //Then
-        assertThat(captor.value.id).isNull()
-        assertThat(captor.value.balance).isEqualTo(BigDecimal.ZERO)
-        assertThat(captor.value.createdOn).isNull()
-
-        assertThat(accountDto.id).isEqualTo(account.id)
-        assertThat(accountDto.balance).isEqualTo(account.balance)
-        assertThat(accountDto.createdOn).isEqualTo(account.createdOn)
     }
 
     @ParameterizedTest
@@ -131,12 +131,11 @@ class AccountServiceUnitTest {
         val initialBalance = BigDecimal.valueOf(input)
         val capture = ArgumentCaptor.forClass(UUID::class.java)
         val accountId = UUID.randomUUID()
-        val mockRepo = mock<AccountRepository> {
+        val accountService = mock<AccountRepository> {
             val optionalAccount = Optional.of(Account(accountId, initialBalance, LocalDateTime.now()))
 
             on { findById(capture.capture()) }.doReturn(optionalAccount)
-        }
-        val accountService = AccountService(mockRepo)
+        }.let(::AccountService)
 
         //When
         val balance = accountService.getAccountBalance(accountId)
@@ -146,26 +145,6 @@ class AccountServiceUnitTest {
         assertThat(balance).isEqualTo(initialBalance)
     }
 
-
-    // TODO can't deposit negative amount
-    @ParameterizedTest
-    @ValueSource(doubles = [250.0, 0.0, 0.5, 255.522165489318])
-    fun should_deposit_and_return(input: Double) {
-        // Given
-        val mockRepo = mock<AccountRepository> {
-            val optionalAccount = Optional.of(Account(UUID.randomUUID(), BigDecimal.ZERO, LocalDateTime.now()))
-
-            on { findById(any()) }.doReturn(optionalAccount)
-        }
-        val accountService = AccountService(mockRepo)
-
-        //When
-        val amount = BigDecimal.valueOf(input)
-        val balance = accountService.deposit(UUID.randomUUID(), amount)
-
-        //Then
-        assertThat(balance).isEqualTo(amount)
-    }
 
     @ParameterizedTest
     @EnumSource(TransactionTypes::class)
@@ -179,28 +158,137 @@ class AccountServiceUnitTest {
         assertThatExceptionOfType(AccountNotFoundException::class.java).isThrownBy {
             when (input) {
                 TransactionTypes.DEPOSIT -> accountService.deposit(UUID.randomUUID(), BigDecimal.ZERO)
-                else -> accountService.withdraw(UUID.randomUUID(), BigDecimal.ZERO)
+                TransactionTypes.WITHDRAWAL -> accountService.withdraw(UUID.randomUUID(), BigDecimal.ZERO)
+                else -> fail("Unknown operation type $input")
             }
         }
     }
 
-    // TODO can't withdraw negative amount
     @ParameterizedTest
-    @ValueSource(doubles = [250.0, 0.0, 0.5, 255.522165489318])
-    fun should_withdraw_and_return(input: Double) {
+    @EnumSource(TransactionTypes::class)
+    fun should_throw_exception_on_negative_amount(input: TransactionTypes) {
         // Given
-        val amount = BigDecimal.valueOf(input)
-        val mockRepo = mock<AccountRepository> {
-            val optionalAccount = Optional.of(Account(UUID.randomUUID(), amount, LocalDateTime.now()))
-
-            on { findById(any()) }.doReturn(optionalAccount)
-        }
-        val accountService = AccountService(mockRepo)
-
-        //When
-        val balance = accountService.withdraw(UUID.randomUUID(), amount)
+        val accountService = mock<AccountRepository> {
+            on { findById(any()) }.doReturn(Optional.empty())
+        }.let(::AccountService)
 
         //Then
-        assertThat(balance).isEqualTo(BigDecimal.ZERO)
+        assertThatExceptionOfType(RuntimeException::class.java).isThrownBy {
+            val negativeAmount = BigDecimal.valueOf(-25.0)
+            when (input) {
+                TransactionTypes.DEPOSIT -> accountService.deposit(UUID.randomUUID(), negativeAmount)
+                TransactionTypes.WITHDRAWAL -> accountService.withdraw(UUID.randomUUID(), negativeAmount)
+                else -> fail("Unknown operation type $input")
+            }
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(doubles = [250.0, 0.0, 0.5, 255.522165489318])
+    fun should_deposit_and_return(input: Double) {
+        // Given
+        val account = UUID.randomUUID()
+        val accountService = mock<AccountRepository> {
+            val optionalAccount = Optional.of(Account(account, BigDecimal.ZERO, LocalDateTime.now()))
+
+            on { findById(any()) }.doReturn(optionalAccount)
+        }.let(::AccountService)
+
+        //When
+        val amount = BigDecimal.valueOf(input)
+        val balance = accountService.deposit(account, amount)
+
+        //Then
+        assertThat(balance).isEqualTo(amount)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideWithdrawInput")
+    fun test_withdraw(
+        found: Boolean,
+        initialBalance: BigDecimal,
+        amount: BigDecimal,
+        then: (BigDecimal?) -> Unit
+    ) {
+        // Given
+        val account = UUID.randomUUID()
+        val accountService = mock<AccountRepository> {
+            val optionalAccount =
+                if (found)
+                    Optional.of(Account(account, initialBalance, LocalDateTime.now()))
+                else
+                    Optional.empty()
+            on { findById(any()) }.doReturn(optionalAccount)
+        }.let(::AccountService)
+
+        //When
+        val `when` = { accountService.withdraw(account, amount) }
+
+        //Then
+        then(`when`)
+    }
+
+    companion object {
+        @JvmStatic
+        fun provideWithdrawInput(): Stream<Arguments> {
+            /**
+             *    account_found, initialBalance, withdrawAmount, test
+             */
+            return Stream.of(
+                Arguments.of(
+                    true,
+                    BigDecimal.valueOf(250.0),
+                    BigDecimal.valueOf(250.0),
+                    isEqualTo(BigDecimal.valueOf(0.0))
+                ),
+                Arguments.of(
+                    true,
+                    BigDecimal.valueOf(250.0),
+                    BigDecimal.valueOf(0.0),
+                    isEqualTo(BigDecimal.valueOf(250.0))
+                ),
+                Arguments.of(
+                    true,
+                    BigDecimal.valueOf(0.5),
+                    BigDecimal.valueOf(0.5),
+                    isEqualTo(BigDecimal.valueOf(0.0))
+                ),
+                Arguments.of(
+                    true,
+                    BigDecimal.valueOf(200.0),
+                    BigDecimal.valueOf(255),
+                    isEqualTo(BigDecimal.valueOf(-55.0))
+                ),
+                //Expect exception
+                Arguments.of(
+                    true,
+                    BigDecimal.valueOf(200.0),
+                    BigDecimal.valueOf(-255),
+                    isExceptionNotInline(RuntimeException::class.java)
+                ),
+                Arguments.of(
+                    false,
+                    BigDecimal.valueOf(200.0),
+                    BigDecimal.valueOf(255.0),
+                    isException<AccountNotFoundException>()
+                ),
+            )
+        }
+
+        private fun isEqualTo(amount: BigDecimal) = { method: () -> BigDecimal ->
+            assertThat(method()).isEqualTo(amount)
+        }
+
+        private inline fun <reified T : Exception> isException() = { method: () -> BigDecimal ->
+            assertThatExceptionOfType(T::class.java).isThrownBy {
+                method()
+            }
+        }
+
+        private fun <T : Exception> isExceptionNotInline(exception: Class<T>) = { method: () -> BigDecimal ->
+            assertThatExceptionOfType(exception).isThrownBy {
+                method()
+            }
+        }
     }
 }
