@@ -4,9 +4,11 @@ import com.nimbusds.jose.shaded.json.JSONArray
 import com.nimbusds.jose.shaded.json.JSONObject
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
@@ -14,6 +16,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@Profile("!test")
 class JWTSecurityConfig : WebSecurityConfigurerAdapter() {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
@@ -38,4 +41,15 @@ class JWTSecurityConfig : WebSecurityConfigurerAdapter() {
                 roles + scopes
             }
         }.also { logger.debug("JwtAuthenticationConverter") }
+}
+
+@Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+@Profile("test")
+class JWTSecurityConfigTest : WebSecurityConfigurerAdapter() {
+    private val logger = LoggerFactory.getLogger(this::class.java)
+
+    override fun configure(web: WebSecurity) =
+        web.ignoring().anyRequest()
+            .let { logger.debug("configured") }
 }

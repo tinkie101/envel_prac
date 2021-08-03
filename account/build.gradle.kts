@@ -46,9 +46,11 @@ dependencies {
 
     testImplementation("org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.security:spring-security-test")
 
     integrationImplementation("org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion")
     integrationImplementation("org.springframework.boot:spring-boot-starter-test")
+    integrationImplementation("org.springframework.security:spring-security-test")
 }
 
 tasks {

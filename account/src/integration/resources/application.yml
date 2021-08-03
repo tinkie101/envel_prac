@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:4321/envel
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+
+  jpa:
+    properties:
+      hibernate:
+        default_schema: account
+        jdbc:
+          time_zone: UTC
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:5001/auth/realms/envel
+
+graphql:
+  spqr:
+    gui:
+      enabled: true
+      endpoint: /gui
+
+com:
+  example:
+    account:
+      audit-api-url: http://localhost:8081/graphql
