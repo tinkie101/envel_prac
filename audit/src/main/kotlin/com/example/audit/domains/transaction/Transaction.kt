@@ -9,7 +9,7 @@ import java.util.*
 import javax.persistence.*
 
 @Entity
-@Table(indexes = [Index(name = "accountIdIdx", columnList = "accountId", unique = true)])
+@Table(indexes = [Index(name = "accountIdIdx", columnList = "accountId,type", unique = true)])
 class Transaction(
     @Id
     @GeneratedValue

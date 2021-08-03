@@ -1,6 +1,7 @@
 package com.example.account.domains.account
 
 import com.example.account.exceptions.AccountNotFoundException
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.util.*
@@ -8,41 +9,58 @@ import javax.transaction.Transactional
 
 @Service
 class AccountService(private val accountRepository: AccountRepository) {
+    private val logger = LoggerFactory.getLogger(this::class.java)
+
     fun getAllAccounts(): List<AccountDto> =
-        accountRepository.findAll().map {
-            it.toDto()
-        }.toList()
+        logger.debug("getAllAccounts").let {
+            accountRepository.findAll().map {
+                it.toDto()
+            }.toList()
+        }
 
     fun getAccount(accountId: UUID): AccountDto =
-        accountRepository.findById(accountId).getOrThrowIfNotFound(accountId).toDto()
+        logger.debug("getAccount $accountId").let {
+            accountRepository.findById(accountId).getOrThrowIfNotFound(accountId).toDto()
+        }
 
     fun createNewAccount(): AccountDto =
-        accountRepository.save(Account()).toDto()
+        logger.debug("createNewAccount").let {
+            accountRepository.save(Account()).toDto()
+        }
 
     fun deleteAccount(accountId: UUID) =
-        accountRepository.deleteById(accountId)
+        logger.debug("deleteAccount $accountId").let {
+            accountRepository.deleteById(accountId)
+        }
 
     fun getAccountBalance(accountId: UUID): BigDecimal =
-        accountRepository.findById(accountId).getOrThrowIfNotFound(accountId).balance
+        logger.debug("getAccountBalance $accountId").let {
+            accountRepository.findById(accountId)
+                .getOrThrowIfNotFound(accountId).balance
+        }
 
     @Transactional
     fun deposit(accountId: UUID, amount: BigDecimal): BigDecimal =
-        throwIfNegative(amount).let {
-            accountRepository.findById(accountId)
-                .getOrThrowIfNotFound(accountId).apply {
-                    balance += amount
-                }
-                .balance
+        logger.debug("deposit $accountId: \$$amount").let {
+            throwIfNegative(amount).let {
+                accountRepository.findById(accountId)
+                    .getOrThrowIfNotFound(accountId).apply {
+                        balance += amount
+                    }
+                    .balance
+            }
         }
 
     @Transactional
     fun withdraw(accountId: UUID, amount: BigDecimal): BigDecimal =
-        throwIfNegative(amount).let {
-            accountRepository.findById(accountId)
-                .getOrThrowIfNotFound(accountId)
-                .apply {
-                    balance -= amount
-                }.balance
+        logger.debug("deposit $accountId: \$$amount").let {
+            throwIfNegative(amount).let {
+                accountRepository.findById(accountId)
+                    .getOrThrowIfNotFound(accountId)
+                    .apply {
+                        balance -= amount
+                    }.balance
+            }
         }
 
     private fun throwIfNegative(amount: BigDecimal) =

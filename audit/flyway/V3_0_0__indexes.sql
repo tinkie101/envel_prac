@@ -1,1 +1,1 @@
-CREATE INDEX account_id_idx ON transaction (account_id);
+CREATE INDEX account_id_idx ON transaction (account_id, type);

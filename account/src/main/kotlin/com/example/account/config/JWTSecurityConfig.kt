@@ -2,6 +2,7 @@ package com.example.account.config
 
 import com.nimbusds.jose.shaded.json.JSONArray
 import com.nimbusds.jose.shaded.json.JSONObject
+import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
@@ -14,14 +15,16 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 class JWTSecurityConfig : WebSecurityConfigurerAdapter() {
-    override fun configure(http: HttpSecurity) {
+    private val logger = LoggerFactory.getLogger(this::class.java)
+
+    override fun configure(http: HttpSecurity) =
         http.authorizeRequests()
             .antMatchers(HttpMethod.GET, "/gui").permitAll()
             .anyRequest().authenticated()
             .and()
             .oauth2ResourceServer().jwt()
             .jwtAuthenticationConverter(getJwtAuthenticationConverter())
-    }
+            .let { logger.debug("configured") }
 
     private fun getJwtAuthenticationConverter(): JwtAuthenticationConverter =
         JwtAuthenticationConverter().apply {
@@ -34,5 +37,5 @@ class JWTSecurityConfig : WebSecurityConfigurerAdapter() {
                 }
                 roles + scopes
             }
-        }
+        }.also { logger.debug("JwtAuthenticationConverter") }
 }

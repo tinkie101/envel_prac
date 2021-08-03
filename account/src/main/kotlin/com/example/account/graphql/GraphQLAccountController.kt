@@ -27,13 +27,13 @@ class GraphQLAccountController(private val accountService: AccountService, priva
 
     @GraphQLMutation(name = "withdraw", description = "Withdraw from account")
     @PreAuthorize("hasRole('mutate')")
-    fun withdrawFromAccount(@GraphQLInputField withdrawalAccount: MutateAccount): BigDecimal =
+    fun withdrawFromAccount(@GraphQLInputField withdrawalAccount: MutateAccountType): BigDecimal =
         accountService.withdraw(withdrawalAccount.accountId, withdrawalAccount.amount)
             .also { auditService.auditWithdrawal(withdrawalAccount.accountId, withdrawalAccount.amount) }
 
     @GraphQLMutation(name = "deposit", description = "Deposit into account")
     @PreAuthorize("hasRole('mutate')")
-    fun depositIntoAccount(@GraphQLInputField depositAccount: MutateAccount): BigDecimal =
+    fun depositIntoAccount(@GraphQLInputField depositAccount: MutateAccountType): BigDecimal =
         accountService.deposit(depositAccount.accountId, depositAccount.amount)
             .also { auditService.auditDeposit(depositAccount.accountId, depositAccount.amount) }
 
