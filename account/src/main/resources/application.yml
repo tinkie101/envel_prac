@@ -1,3 +1,9 @@
+logging:
+  level:
+    com:
+      example:
+        debug
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:4321/envel
