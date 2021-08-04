@@ -2,7 +2,6 @@ package com.example.account.graphql
 
 import com.example.account.domains.account.AccountDto
 import com.example.account.domains.account.AccountService
-import com.example.account.domains.audit.AuditService
 import io.leangen.graphql.annotations.GraphQLInputField
 import io.leangen.graphql.annotations.GraphQLMutation
 import io.leangen.graphql.annotations.GraphQLQuery
@@ -14,7 +13,7 @@ import java.util.*
 
 @Component
 @GraphQLApi
-class GraphQLAccountController(private val accountService: AccountService, private val auditService: AuditService) {
+class GraphQLAccountController(private val accountService: AccountService) {
     @GraphQLQuery(name = "accounts", description = "Get All Accounts")
     fun getAllAccounts(): List<AccountType> = accountService.getAllAccounts().map { it.toAccountType() }
 
@@ -29,13 +28,11 @@ class GraphQLAccountController(private val accountService: AccountService, priva
     @PreAuthorize("hasRole('mutate')")
     fun withdrawFromAccount(@GraphQLInputField withdrawalAccount: MutateAccountType): BigDecimal =
         accountService.withdraw(withdrawalAccount.accountId, withdrawalAccount.amount)
-            .also { auditService.auditWithdrawal(withdrawalAccount.accountId, withdrawalAccount.amount) }
 
     @GraphQLMutation(name = "deposit", description = "Deposit into account")
     @PreAuthorize("hasRole('mutate')")
     fun depositIntoAccount(@GraphQLInputField depositAccount: MutateAccountType): BigDecimal =
         accountService.deposit(depositAccount.accountId, depositAccount.amount)
-            .also { auditService.auditDeposit(depositAccount.accountId, depositAccount.amount) }
 
     // Extension function
     private fun AccountDto.toAccountType(): AccountType = AccountType(id, balance, createdOn)

@@ -22,14 +22,16 @@ class AccountServiceUnitTest {
     @Test
     fun should_get_all_accounts() {
         //Given
-        val accountService = mock<AccountRepository> {
+        val mockRepo = mock<AccountRepository> {
             on { findAll() }.doReturn(
                 listOf(
                     Account(id = UUID.randomUUID(), createdOn = LocalDateTime.now()),
                     Account(id = UUID.randomUUID(), createdOn = LocalDateTime.now())
                 )
             )
-        }.let(::AccountService)
+        }
+
+        val accountService = AccountService(mockRepo, mock {})
 
         //When
         val accounts = accountService.getAllAccounts()
@@ -44,9 +46,11 @@ class AccountServiceUnitTest {
         val randomUUID = UUID.randomUUID()
         val captor = ArgumentCaptor.forClass(Account::class.java)
         val account = Account(id = randomUUID, createdOn = LocalDateTime.now())
-        val accountService = mock<AccountRepository> {
+        val mockRepo = mock<AccountRepository> {
             onGeneric { save(captor.capture()) }.doReturn(account)
-        }.let(::AccountService)
+        }
+
+        val accountService = AccountService(mockRepo, mock {})
 
         //When
         val accountDto = accountService.createNewAccount()
@@ -68,7 +72,7 @@ class AccountServiceUnitTest {
 
         //Given
         val captor = ArgumentCaptor.forClass(UUID::class.java)
-        val accountService = mock<AccountRepository> {
+        val mockRepo = mock<AccountRepository> {
             on { findById(captor.capture()) }.doReturn(
                 Optional.of(
                     Account(
@@ -77,7 +81,9 @@ class AccountServiceUnitTest {
                     )
                 )
             )
-        }.let(::AccountService)
+        }
+
+        val accountService = AccountService(mockRepo, mock {})
 
         //When
         val account = accountService.getAccount(accountId)
@@ -93,9 +99,11 @@ class AccountServiceUnitTest {
         val accountId = UUID.fromString(input)
 
         //Given
-        val accountService = mock<AccountRepository> {
+        val mockRepo = mock<AccountRepository> {
             on { findById(any()) }.doReturn(Optional.empty())
-        }.let(::AccountService)
+        }
+
+        val accountService = AccountService(mockRepo, mock {})
 
         //Then
         assertThatExceptionOfType(AccountNotFoundException::class.java).isThrownBy {
@@ -113,7 +121,7 @@ class AccountServiceUnitTest {
             // Weird `when` syntax?
             doNothing().`when`(it).deleteById(capture.capture())
         }
-        val accountService = AccountService(mockRepo)
+        val accountService = AccountService(mockRepo, mock {})
 
         //When
         val accountId = UUID.fromString(input)
@@ -131,11 +139,13 @@ class AccountServiceUnitTest {
         val initialBalance = BigDecimal.valueOf(input)
         val capture = ArgumentCaptor.forClass(UUID::class.java)
         val accountId = UUID.randomUUID()
-        val accountService = mock<AccountRepository> {
+        val mockRepo = mock<AccountRepository> {
             val optionalAccount = Optional.of(Account(accountId, initialBalance, LocalDateTime.now()))
 
             on { findById(capture.capture()) }.doReturn(optionalAccount)
-        }.let(::AccountService)
+        }
+
+        val accountService = AccountService(mockRepo, mock {})
 
         //When
         val balance = accountService.getAccountBalance(accountId)
@@ -150,9 +160,11 @@ class AccountServiceUnitTest {
     @EnumSource(TransactionTypes::class)
     fun should_throw_exception_on_invalid_id(input: TransactionTypes) {
         // Given
-        val accountService = mock<AccountRepository> {
+        val mockRepo = mock<AccountRepository> {
             on { findById(any()) }.doReturn(Optional.empty())
-        }.let(::AccountService)
+        }
+
+        val accountService = AccountService(mockRepo, mock {})
 
         //Then
         assertThatExceptionOfType(AccountNotFoundException::class.java).isThrownBy {
@@ -168,9 +180,11 @@ class AccountServiceUnitTest {
     @EnumSource(TransactionTypes::class)
     fun should_throw_exception_on_negative_amount(input: TransactionTypes) {
         // Given
-        val accountService = mock<AccountRepository> {
+        val mockRepo = mock<AccountRepository> {
             on { findById(any()) }.doReturn(Optional.empty())
-        }.let(::AccountService)
+        }
+
+        val accountService = AccountService(mockRepo, mock {})
 
         //Then
         assertThatExceptionOfType(RuntimeException::class.java).isThrownBy {
@@ -188,11 +202,13 @@ class AccountServiceUnitTest {
     fun should_deposit_and_return(input: Double) {
         // Given
         val account = UUID.randomUUID()
-        val accountService = mock<AccountRepository> {
+        val mockRepo = mock<AccountRepository> {
             val optionalAccount = Optional.of(Account(account, BigDecimal.ZERO, LocalDateTime.now()))
 
             on { findById(any()) }.doReturn(optionalAccount)
-        }.let(::AccountService)
+        }
+
+        val accountService = AccountService(mockRepo, mock {})
 
         //When
         val amount = BigDecimal.valueOf(input)
@@ -212,14 +228,16 @@ class AccountServiceUnitTest {
     ) {
         // Given
         val account = UUID.randomUUID()
-        val accountService = mock<AccountRepository> {
+        val mockRepo = mock<AccountRepository> {
             val optionalAccount =
                 if (found)
                     Optional.of(Account(account, initialBalance, LocalDateTime.now()))
                 else
                     Optional.empty()
             on { findById(any()) }.doReturn(optionalAccount)
-        }.let(::AccountService)
+        }
+
+        val accountService = AccountService(mockRepo, mock {})
 
         //Then
         then.invoke {

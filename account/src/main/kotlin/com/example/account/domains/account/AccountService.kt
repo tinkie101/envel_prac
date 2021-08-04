@@ -1,5 +1,6 @@
 package com.example.account.domains.account
 
+import com.example.account.domains.audit.AuditService
 import com.example.account.exceptions.AccountNotFoundException
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -8,7 +9,7 @@ import java.util.*
 import javax.transaction.Transactional
 
 @Service
-class AccountService(private val accountRepository: AccountRepository) {
+class AccountService(private val accountRepository: AccountRepository, private val auditService: AuditService) {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     fun getAllAccounts(): List<AccountDto> =
@@ -49,7 +50,7 @@ class AccountService(private val accountRepository: AccountRepository) {
                     }
                     .balance
             }
-        }
+        }.also { auditService.auditDeposit(accountId, amount) }
 
     @Transactional
     fun withdraw(accountId: UUID, amount: BigDecimal): BigDecimal =
@@ -61,7 +62,7 @@ class AccountService(private val accountRepository: AccountRepository) {
                         balance -= amount
                     }.balance
             }
-        }
+        }.also { auditService.auditWithdrawal(accountId, amount) }
 
     private fun throwIfNegative(amount: BigDecimal) =
         if (amount < BigDecimal.ZERO)
