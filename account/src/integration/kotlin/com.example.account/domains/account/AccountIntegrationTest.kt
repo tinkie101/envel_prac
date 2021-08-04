@@ -6,7 +6,6 @@ import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
-import org.springframework.core.io.ResourceLoader
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
@@ -16,9 +15,7 @@ import java.util.stream.Stream
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class AccountIntegrationTest(
-    @Autowired private val accountService: AccountService,
     @Autowired private val accountRepository: AccountRepository,
-    @Autowired private val resourceLoader: ResourceLoader
 ) {
     @LocalServerPort
     private var port: Int? = 0
@@ -30,11 +27,6 @@ class AccountIntegrationTest(
     @ParameterizedTest
     @MethodSource("getQueryRequests")
     fun test_all_query_requests(query: String, method: String) {
-        val testClient = WebTestClient
-            .bindToServer()
-            .baseUrl("http://localhost:$port")
-            .build()
-
         val accountId = accountRepository.save(Account()).id!!
 
         val variablesString = """"variables": {
